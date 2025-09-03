@@ -5,6 +5,17 @@
 
     RewriteEngine On
 
+    <Files ".env">
+        Require all denied
+    </Files>
+
+    Options -Indexes
+
+
+    # Handle when user go to site root, redirect to /public
+    RewriteCond %{REQUEST_URI} !/public
+    RewriteRule ^(.*)$ public/$1 [L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -24,6 +35,6 @@
     RewriteRule ^ index.php [L]
 </IfModule>
 
-<Files ".env">
-    Require all denied
-</Files>
+
+
+
