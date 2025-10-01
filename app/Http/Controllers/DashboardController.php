@@ -77,7 +77,7 @@ class DashboardController extends Controller
             
             // ✅ Gunakan timeout yang lebih reasonable
             $startTime = microtime(true);
-            $response = Https::get($url); // Ubah dari 500 ke 10 detik
+            $response = Http::get($url); // Ubah dari 500 ke 10 detik
             $endTime = microtime(true);
             $duration = ($endTime - $startTime) * 1000;
             
@@ -114,7 +114,7 @@ class DashboardController extends Controller
             Log::info('DashboardController: URL information', ['url' => $url]);
             
             $startTime = microtime(true);
-            $response = Https::get($url);
+            $response = Http::get($url);
             $endTime = microtime(true);
             $duration = ($endTime - $startTime) * 1000;
             
@@ -401,7 +401,7 @@ class DashboardController extends Controller
     private function isApiHealthy()
     {
         try {
-            $response = Https::get($this->domain . $this->url . 'health.php');
+            $response = Http::get($this->domain . $this->url . 'health.php');
             return $response->successful();
         } catch (Exception $e) {
             return false;
