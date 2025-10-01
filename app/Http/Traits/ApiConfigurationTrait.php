@@ -173,7 +173,7 @@ trait ApiConfigurationTrait
                 'ip' => $ipaddress
             ]);
             
-            $response = Https::get($url, $params);
+            $response = Http::get($url, $params);
             
             Log::info('Login API response received', [
                 'status' => $response->status(),
@@ -199,7 +199,7 @@ trait ApiConfigurationTrait
     public function isApiHealthy(): bool
     {
         try {
-            $response = Https::get($this->domain . $this->url . 'health-check.php');
+            $response = Http::get($this->domain . $this->url . 'health-check.php');
             return $response->successful();
         } catch (Exception $e) {
             return false;

@@ -233,7 +233,7 @@ class OutgoingController extends Controller
         $partno     = $request->get('partno') ?? null;
         ($jnsdokbc === 'null') ? null : $jnsdokbc;
         
-        $sql    = Https::get($this->domain . $this->url . "json_download_outgoing.php?valstdate={$stdate}&valendate={$endate}&valjnsdok={$jnsdokbc}&valnodok={$nodokbc}&valpartno={$partno}");
+        $sql    = Http::get($this->domain . $this->url . "json_download_outgoing.php?valstdate={$stdate}&valendate={$endate}&valjnsdok={$jnsdokbc}&valnodok={$nodokbc}&valpartno={$partno}");
 
         //  mengambil data table
         // $sql    = Http::get($this->domain . $this->url . "json_download_outgoing.php", [

@@ -333,7 +333,7 @@ class OpnameController extends Controller
         $gudang     = $request->get('gudang', '');
         
         $params = $request;
-        $sql    = Https::get($this->domain . $this->url . "json_download_opname_spreadsheet.php", $params->toArray());
+        $sql    = Http::get($this->domain . $this->url . "json_download_opname_spreadsheet.php", $params->toArray());
         $data = $sql['rows'];
         // return $sql;
         // Membuat objek Spreadsheet baru
