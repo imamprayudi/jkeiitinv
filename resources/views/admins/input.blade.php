@@ -10,7 +10,7 @@
             <div class="col-12 mb-2">
                 <div class="card">
                     <div class="card-header">
-                        <h6 class="box-title">Search Data = {{ route('input.loaddata') }} </h6>
+                        <h6 class="box-title">Search Data</h6>
                         {{-- <div class="text-muted font-italic"><small>Please fill the box if you want to know</small></div> --}}
                     </div>
                     <div class="card-body">
@@ -130,9 +130,17 @@
 <script>
 //  ***
 //  load data
-// var url = "{{ route('input.loaddata') }}";
-var url = "https://jkeis.grahaindomedia.com/jkeiitinv/public/input/loaddata";
+function forceHttps(url) {
+    if (url.startsWith('http://')) {
+        return 'https://' + url.substring(7); // buang "http://"
+    }
+    return url; // kalau sudah https, tidak diubah
+}
 
+
+var url = forceHttps("{{ route('input.loaddata') }}");
+//var url = "https://jkeis.grahaindomedia.com/jkeiitinv/public/input/loaddata";
+console.log(url);
 function loaddata()
 {
     //  variable
