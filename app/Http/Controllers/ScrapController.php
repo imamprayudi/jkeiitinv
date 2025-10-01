@@ -24,7 +24,7 @@ class ScrapController extends Controller
     //  index
     public function index(Request $request)
     {
-        $gitversions = Http::get($this->domain.$this->url."json_version_sync.php");
+        $gitversions = Https::get($this->domain.$this->url."json_version_sync.php");
         $gitversions = $gitversions['version'];
         $categories = [
             "Bahan baku",
@@ -63,7 +63,7 @@ class ScrapController extends Controller
             $periode     = $request->get('periode');
             $partno     = $request->get('partno');
 
-            $counts = Http::get($this->domain . $this->url . "json_gudang_scrap.php", [
+            $counts = Https::get($this->domain . $this->url . "json_gudang_scrap.php", [
                 'periode' => $periode,
                 'partno' => $partno,
                 'tempat' => $this->tempat,
@@ -90,7 +90,7 @@ class ScrapController extends Controller
                 $awalData               = (($jumlahDataPerHalaman * $halamanAktif) - $jumlahDataPerHalaman);
 
                 //  mengambil data table
-                $sql    = Http::get($this->domain . $this->url . "json_gudang_scrap.php", [
+                $sql    = Https::get($this->domain . $this->url . "json_gudang_scrap.php", [
                     'periode' => $periode,
                     'partno' => $partno,
                     'tempat' => $this->tempat,
@@ -186,7 +186,7 @@ class ScrapController extends Controller
 
         //  execute database
         // $datas  = DB::select("call sync_down_input('{$stdate}', '{$endate}', '{$jnsdokbc}', '{$nodokbc}', '{$partno}');");
-        $datas = Http::get($this->domain.$this->url.'json_gudang_scrap.php',[
+        $datas = Https::get($this->domain.$this->url.'json_gudang_scrap.php',[
                     'periode' => $periode,
                     'partno' => $partno,
                     'tempat' => $tempat

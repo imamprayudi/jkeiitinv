@@ -356,7 +356,7 @@ class MutationController extends Controller
         $gudang     = $request->get('gudang', '');
         
         // Ambil data dari API
-        $response = Http::get($this->domain . $this->url . "json_download_mutation_spreadsheet.php?periode=" . $periode . "&kategori=" . $kategori . "&gudang=" . $gudang);
+        $response = Https::get($this->domain . $this->url . "json_download_mutation_spreadsheet.php?periode=" . $periode . "&kategori=" . $kategori . "&gudang=" . $gudang);
         $data = $response['rows'];
 
         // Membuat objek Spreadsheet baru
@@ -464,7 +464,7 @@ class MutationController extends Controller
         $gudang     = $request->get('gudang', '');
         
         // Ambil data dari API
-        $response = Http::get($this->domain . $this->url . "json_download_mutation.php?periode=" . $periode . "&kategori=" . $kategori . "&gudang=" . $gudang);
+        $response = Https::get($this->domain . $this->url . "json_download_mutation.php?periode=" . $periode . "&kategori=" . $kategori . "&gudang=" . $gudang);
         $data = $response['rows'];
 
         // Membuat objek Spreadsheet baru
@@ -511,7 +511,7 @@ class MutationController extends Controller
         // $params = $request;
         // dd($params);
         //  mengambil data table
-        $sql    = Http::get($this->domain . $this->url . "json_download_mutation.php?periode=".$periode."&kategori=".$kategori."&gudang=".$gudang);
+        $sql    = Https::get($this->domain . $this->url . "json_download_mutation.php?periode=".$periode."&kategori=".$kategori."&gudang=".$gudang);
         // return $sql;
         $data = $sql['rows'];
         // // return $data;
