@@ -131,7 +131,7 @@
 //  ***
 //  load data
 // var url = "{{ route('input.loaddata') }}";
-var url = "https://jkeis.grahaindomeida.com/jkeiitinv/public/input/loaddata";
+var url = "https://jkeis.grahaindomedia.com/jkeiitinv/public/input/loaddata";
 
 function loaddata()
 {
