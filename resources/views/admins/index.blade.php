@@ -98,9 +98,19 @@
 <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
 <script>
     //  ***
-    //  load data
-    var url = "{{ route('mutation') }}";
-    var urlpaging = "{{ route('mutation_page') }}";
+    //  load data admins.index
+  
+    function forceHttps(url) {
+    if (url.startsWith('http://')) {
+        return 'https://' + url.substring(7); // buang "http://"
+    }
+    return url; // kalau sudah https, tidak diubah
+  }
+
+  var url = forceHttps("{{ route('mutation') }}");
+  // var url = "{{ route('mutation') }}";
+  var urlpaging = forceHttps("{{ route('mutation_page') }}");
+  // var urlpaging = "{{ route('mutation_page') }}";
     var kategori = "{{ $kategori_data['kategori'] }}";
     var gudang   = "{{ $kategori_data['gudang'] }}";
 
