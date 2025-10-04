@@ -163,7 +163,17 @@
 <script>
 //  ***
 //  load data
-var url = "{{ route('output.loaddata') }}";
+
+function forceHttps(url) {
+    if (url.startsWith('http://')) {
+        return 'https://' + url.substring(7); // buang "http://"
+    }
+    return url; // kalau sudah https, tidak diubah
+}
+
+var url = forceHttps("{{ route('output.loaddata') }}");
+// var url = "{{ route('output.loaddata') }}";
+
 function loaddata()
 {
     //  variable
