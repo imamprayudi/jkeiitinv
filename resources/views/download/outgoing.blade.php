@@ -43,7 +43,7 @@
             <td>{{ $rowdata['buktikirim'] }}</td>
             <td>{{ $rowdata['datekirim'] }}</td>
             <td>{{ $rowdata['buktiinvoice'] }}</td>
-            <td>{{ $rowdata['dateinvoice'] }}</td>
+            
             <td>{{ $rowdata['supplier'] }}</td>
             <td>{{ $rowdata['partno'] }}</td>
             <td>{{ $rowdata['partname'] }}</td>
