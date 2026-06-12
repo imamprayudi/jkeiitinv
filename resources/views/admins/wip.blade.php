@@ -263,7 +263,7 @@
         $.ajax({
             url     : urlpaging,
             method  : 'GET',
-            data    : {  periode, work_center, dic, kode_barang, nama_barang, satuan, jumlah },
+            data    : {  jumlahHalaman : jumlahHalaman,periode, work_center, dic, kode_barang, nama_barang, satuan, jumlah },
             dataType: 'json',
             success : function(data)
             {
@@ -317,7 +317,7 @@
         $.ajax({
             url     : urlpaging,
             method  : 'GET',
-            data    : {  periode, work_center, dic, kode_barang, nama_barang, satuan, jumlah },
+            data    : {  jumlahHalaman : jumlahHalaman,periode, work_center, dic, kode_barang, nama_barang, satuan, jumlah },
             dataType: 'json',
             success : function(data)
             {
@@ -391,7 +391,14 @@
         $.ajax({
             url     : urlpaging,
             method  : 'GET',
-            data    : {  periode, work_center, dic, kode_barang, nama_barang, satuan, jumlah },
+            data    : { jumlahHalaman : jumlahHalaman,
+                        periode, 
+                        work_center, 
+                        dic, 
+                        kode_barang, 
+                        nama_barang, 
+                        satuan, 
+                        jumlah },
             dataType: 'json',
             success : function(data)
             {
@@ -465,7 +472,7 @@
         $.ajax({
             url     : urlpaging,
             method  : 'GET',
-            data    : {  periode, work_center, dic, kode_barang, nama_barang, satuan, jumlah },
+            data    : {  jumlahHalaman : jumlahHalaman,periode, work_center, dic, kode_barang, nama_barang, satuan, jumlah },
             dataType: 'json',
             success : function(data)
             {
