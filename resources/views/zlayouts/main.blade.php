@@ -247,7 +247,6 @@
                 <span class="nav-link-text">Bahan Baku - GM</span>
               </a>
             </li>
-            @if($userid != 'customs')
             
             <li class="nav-item {{ (request()->is('bahan_baku_gu')) ? 'active fw-bold' : '' }}">
               <a class="nav-link link-secondary" aria-current="page" href="{{ url('/bahan_baku_gu') }}">
@@ -313,7 +312,7 @@
                 <span class="nav-link-text">Peralatan Perkantoran</span>
               </a>
             </li>
-            @endif
+            
             <li class="nav-item {{ (request()->is('finishgood_gfg')) ? 'active fw-bold' : '' }}">
               <a class="nav-link link-secondary" aria-current="page" href="{{ url('/finishgood_gfg') }}">
                 <div class="nav-link-icon text-success-emphasis">
@@ -322,7 +321,7 @@
                 <span class="nav-link-text">Hasil Produksi - GFG</span>
               </a>
             </li>
-            @if($userid!= 'customs')
+            
             <li class="nav-item {{ (request()->is('finishgood_gu')) ? 'active fw-bold' : '' }}">
               <a class="nav-link link-secondary" aria-current="page" href="{{ url('/finishgood_gu') }}">
                 <div class="nav-link-icon text-success-emphasis">
@@ -371,7 +370,7 @@
                 <span class="nav-link-text">Scrap</span>
               </a>
             </li>
-            @endif
+            
           </ul>
         </div>
       </li>
