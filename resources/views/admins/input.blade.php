@@ -138,8 +138,9 @@ function forceHttps(url) {
 }
 
 
-var url = forceHttps("{{ route('input.loaddata') }}");
+//var url = forceHttps("{{ route('input.loaddata') }}");
 //var url = "https://jkeis.grahaindomedia.com/jkeiitinv/public/input/loaddata";
+var url = "{{ route('input.loaddata') }}";
 console.log(url);
 function loaddata()
 {

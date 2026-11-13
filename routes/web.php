@@ -9,6 +9,7 @@ use App\Http\Controllers\IncomingController;
 use App\Http\Controllers\OutgoingController;
 use App\Http\Controllers\WipController;
 use App\Http\Controllers\MutationController;
+use App\Http\Controllers\MutationReviewController;
 use App\Http\Controllers\OpnameController;
 
 /*
@@ -56,6 +57,13 @@ Route::group(['middleware'=>['sesauthgitinventory']], function () {
 
     });
 
+
+    //  **
+    //  Mutation Review
+    Route::get('/bahan_baku_gm_review', [MutationReviewController::class, 'index']);
+    Route::get('/mutation_review', [MutationReviewController::class, 'loaddata'])
+    ->name('mutation_review');
+  
     //  **
     //  Mutation
     Route::get('/bahan_baku_gm', [MutationController::class, 'gudang_material']);

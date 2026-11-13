@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Log;
 trait ApiConfigurationTrait
 {
     // ✅ Gunakan private untuk menghindari konflik
-    private $apiDomain = "https://svr1.jkei.jvckenwood.com/";
-    private $apiUrl = "api_invesa_test/";
+    private $apiDomain = "https://jkei.jvckenwood.com/";
+    private $apiUrl = "api/invesa/";
     private $apiVersion = "versioning..";
 
     /**
@@ -42,11 +42,7 @@ trait ApiConfigurationTrait
     private function setDomainBasedOnServer()
     {
         $serverName = $_SERVER['SERVER_NAME'] ?? 'localhost';
-        
-        if (str_contains($serverName, '136.198.117.')) {
-            $this->apiDomain = "http://136.198.117.118/";
-        }
-        
+
         // ✅ Expose domain melalui getter untuk backward compatibility
         $this->domain = $this->apiDomain;
         $this->url = $this->apiUrl;

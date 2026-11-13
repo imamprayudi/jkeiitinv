@@ -171,8 +171,10 @@ function forceHttps(url) {
     return url; // kalau sudah https, tidak diubah
 }
 
-var url = forceHttps("{{ route('output.loaddata') }}");
-// var url = "{{ route('output.loaddata') }}";
+// pakai forceHttps jika running di server yang butuh https
+//var url = forceHttps("{{ route('output.loaddata') }}");
+//pakai ini jika running di localhost atau server yang tidak butuh https
+var url = "{{ route('output.loaddata') }}";
 
 function loaddata()
 {
