@@ -64,7 +64,7 @@ class IncomingController extends Controller
                 'limit' => 1
             ]);
 
-            $totalcount = $counts['totalCount'] ?? 0;
+            $totalcount = (int) ($counts['totalCount'] ?? 0);
 
             if ($totalcount > 0) {
                 $jumlahHalaman = ceil($totalcount / $jumlahDataPerHalaman);
@@ -83,15 +83,14 @@ class IncomingController extends Controller
                 ]);
 
                 $nomor = $awalData;
-                foreach ($sql['rows'] as $rowdata) {
+                foreach (($sql['rows'] ?? []) as $rowdata) {
                     $no = ++$nomor;
                     $output .= $this->return_data($no, $rowdata);
                 }
             } else {
-                $jumlahHalaman = ceil($totalcount / $jumlahDataPerHalaman);
+                $jumlahHalaman = 0;
                 $halamanAktif = 0;
-                $awalData = (($jumlahDataPerHalaman * $halamanAktif) - $jumlahDataPerHalaman) + 1;
-                $output = '<tr><td class="text-center" colspan="16">No Data Found</td></tr>';
+                $output = '<tr><td class="text-center" colspan="14">No Data Found</td></tr>';
             }
 
             $data = [

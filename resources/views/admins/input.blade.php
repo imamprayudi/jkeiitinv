@@ -141,7 +141,55 @@ function forceHttps(url) {
 //var url = forceHttps("{{ route('input.loaddata') }}");
 //var url = "https://jkeis.grahaindomedia.com/jkeiitinv/public/input/loaddata";
 var url = "{{ route('input.loaddata') }}";
+var urlPagination = "{{ route('input.pagination') }}";
 console.log(url);
+
+function applyInputResult(data)
+{
+    var vallaquo = data.halamanAktif - 1;
+    var valraquo = data.halamanAktif + 1;
+    $("#loadingdata").remove();
+    $('tbody').html(data.table_data);
+
+    if (data.totalcount == 1) {
+        $("#spn_totalcount").text("Total data " + data.totalcount + " record");
+    } else if (data.totalcount > 1) {
+        $("#spn_totalcount").text("Total data " + data.totalcount + " records");
+    } else {
+        $("#spn_totalcount").text("No data found");
+        $("#navigation").remove();
+        return;
+    }
+
+    var canPrev = data.halamanAktif > 1;
+    var canNext = data.halamanAktif < data.jumlahHalaman;
+    $("#navigation").remove();
+    $("#writepagination").append(""
+        + "<div id='navigation'>"
+        + "<nav class='pagination-outer' aria-label='Page navigation'>"
+        + "<ul class='pagination pagination-sm'>"
+        + (canPrev
+            ? "<li class='page-item'><a href='#' class='page-link' aria-label='First' onclick='first(1)'><span aria-hidden='true'>First</span></a></li>"
+              + "<li class='page-item'><a href='#' class='page-link' aria-label='Previous' onclick='laquo("+vallaquo+")'><span aria-hidden='true'>«</span></a></li>"
+            : "<li class='page-item disabled'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true' class='text-muted'>First</span></a></li>"
+              + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Previous'><span aria-hidden='true' class='text-muted'>«</span></a></li>")
+        + "<li class='page-item disabled active'><a href='#' class='page-link'><span aria-hidden='true'>"+data.halamanAktif+" of about "+data.jumlahHalaman+" page</span></a></li>"
+        + (canNext
+            ? "<li class='page-item'><a href='#' class='page-link' aria-label='Next' onclick='raquo("+valraquo+")'><span aria-hidden='true'>»</span></a></li>"
+              + "<li class='page-item'><a href='#' class='page-link' aria-label='Last' onclick='last("+data.jumlahHalaman+")'><span aria-hidden='true'>Last</span></a></li>"
+            : "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Next'><span aria-hidden='true' class='text-muted'>»</span></a></li>"
+              + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Last'><span aria-hidden='true' class='text-muted'>Last</span></a></li>")
+        + "</ul></nav></div>");
+}
+
+function showInputLoadError()
+{
+    $("#loadingdata").remove();
+    $("#navigation").remove();
+    $("#spn_totalcount").text("Failed to load data");
+    $('tbody').html('<tr><td class="text-center" colspan="14">Failed to load data</td></tr>');
+}
+
 function loaddata()
 {
     //  variable
@@ -157,64 +205,13 @@ function loaddata()
         method  : 'GET',
         data    : { stdate:stdate, endate:endate, jnsdokbc:jnsdokbc, nodokbc:nodokbc, partno:partno },
         dataType: 'json',
-        success : function(data)
-        {
-            var valraquo = data.halamanAktif + 1;
-            $("#loadingdata").remove();
-            $('tbody').html(data.table_data);
-            //  total count
-            if(data.totalcount == 1)
-            {
-                $("#spn_totalcount").text("Total data "+data.totalcount+" record");
-            }
-            else if(data.totalcount > 1)
-            {
-                $("#spn_totalcount").text("Total data "+data.totalcount+" records");
-            }
-            else
-            {
-                $("#spn_totalcount").text("Data nothing");
-            }
-            //  pagination
-            if(data.halamanAktif === data.jumlahHalaman)
-            {
-                $("#navigation").remove();
-                $("#writepagination").append(""
-                + "<div id='navigation'>"
-                    + "<nav class='pagination-outer' aria-label='Page navigation'>"
-                    + "<ul class='pagination pagination-sm'>"
-                        + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true' class='text-muted'>First</span></a></li>"
-                        + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Previous'><span aria-hidden='true' class='text-muted'>«</span></a></li>"
-                        + "<li class='page-item disabled active'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true'>"+data.halamanAktif+" of about "+data.jumlahHalaman+" page</span></a></li>"
-                        + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Next'><span aria-hidden='true' class='text-muted'>»</span></a></li>"
-                        + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Last'><span aria-hidden='true' class='text-muted'>Last</span></a></li>"
-                    + "</ul>"
-                    + "</nav>"
-                + "</div>");
-            }
-            else
-            {
-                $("#navigation").remove();
-                $("#writepagination").append(""
-                + "<div id='navigation'>"
-                    + "<nav class='pagination-outer' aria-label='Page navigation'>"
-                    + "<ul class='pagination pagination-sm'>"
-                        + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true' class='text-muted'>First</span></a></li>"
-                        + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Previous'><span aria-hidden='true' class='text-muted'>«</span></a></li>"
-                        + "<li class='page-item disabled active'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true'>"+data.halamanAktif+" of about "+data.jumlahHalaman+" page</span></a></li>"
-                        + "<li class='page-item '><a href='#' class='page-link' aria-label='Next' onclick=\'raquo("+(valraquo)+")\'><span aria-hidden='true'>»</span></a></li>"
-                        + "<li class='page-item '><a href='#' class='page-link' aria-label='Last' onclick=\'last("+data.jumlahHalaman+")\'><span aria-hidden='true'>Last</span></a></li>"
-                    + "</ul>"
-                    + "</nav>"
-                + "</div>");
-            }
-        }
+        success : function(data) { applyInputResult(data); },
+        error   : function() { showInputLoadError(); }
     });
 }
 
 function search()
 {
-    //  variable
     var stdate      = $("#stdate").val().replace(/-/g, "");
     var endate      = $("#endate").val().replace(/-/g, "");
     var jnsdokbc    = $("#jnsdokbc").val();
@@ -230,106 +227,16 @@ function search()
         method  : 'GET',
         data    : { stdate:stdate, endate:endate, jnsdokbc:jnsdokbc, nodokbc:nodokbc, partno:partno },
         dataType: 'json',
-        success : function(data)
-        {
-            var vallaquo = data.halamanAktif - 1;
-            var valraquo = data.halamanAktif + 1;
-            $("#loadingdata").remove();
-            $('tbody').html(data.table_data);
-            //  total count
-            if(data.totalcount == 1)
-            {
-                $("#spn_totalcount").text("Total data "+data.totalcount+" record");
-            }
-            else if(data.totalcount > 1)
-            {
-                $("#spn_totalcount").text("Total data "+data.totalcount+" records");
-            }
-            else
-            {
-                $("#spn_totalcount").text("Data nothing");
-            }
-            //  pagination
-            if(data.halamanAktif > 1)
-            {
-                if(data.halamanAktif < data.jumlahHalaman)
-                {
-                    $("#navigation").remove();
-                    $("#writepagination").append(""
-                    + "<div id='navigation'>"
-                        + "<nav class='pagination-outer' aria-label='Page navigation'>"
-                        + "<ul class='pagination pagination-sm'>"
-                            + "<li class='page-item '><a href='#' class='page-link' aria-label='First' onclick=\'first(1)\'><span aria-hidden='true'>First</span></a></li>"
-                            + "<li class='page-item '><a href='#' class='page-link' aria-label='Previous' onclick=\'laquo("+(vallaquo)+")\'><span aria-hidden='true'>«</span></a></li>"
-                            + "<li class='page-item disabled active'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true'>"+data.halamanAktif+" of about "+data.jumlahHalaman+" page</span></a></li>"
-                            + "<li class='page-item '><a href='#' class='page-link' aria-label='Next' onclick=\'raquo("+(valraquo)+")\'><span aria-hidden='true'>»</span></a></li>"
-                            + "<li class='page-item '><a href='#' class='page-link' aria-label='Last' onclick=\'last("+data.jumlahHalaman+")\'><span aria-hidden='true'>Last</span></a></li>"
-                        + "</ul>"
-                        + "</nav>"
-                    + "</div>");
-                }
-                else
-                {
-                    $("#navigation").remove();
-                    $("#writepagination").append(""
-                    + "<div id='navigation'>"
-                        + "<nav class='pagination-outer' aria-label='Page navigation'>"
-                        + "<ul class='pagination pagination-sm'>"
-                            + "<li class='page-item '><a href='#' class='page-link' aria-label='First' onclick=\'first(1)\'><span aria-hidden='true'>First</span></a></li>"
-                            + "<li class='page-item '><a href='#' class='page-link' aria-label='Previous' onclick=\'laquo("+(vallaquo)+")\'><span aria-hidden='true'>«</span></a></li>"
-                            + "<li class='page-item disabled active'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true'>"+data.halamanAktif+" of about "+data.jumlahHalaman+" page</span></a></li>"
-                            + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Next'><span aria-hidden='true' class='text-muted'>»</span></a></li>"
-                            + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Last'><span aria-hidden='true' class='text-muted'>Last</span></a></li>"
-                        + "</ul>"
-                        + "</nav>"
-                    + "</div>");
-                }
-            }
-            else
-            {
-                if(data.halamanAktif === data.jumlahHalaman)
-                {
-                    $("#navigation").remove();
-                    $("#writepagination").append(""
-                    + "<div id='navigation'>"
-                        + "<nav class='pagination-outer' aria-label='Page navigation'>"
-                        + "<ul class='pagination pagination-sm'>"
-                            + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true' class='text-muted'>First</span></a></li>"
-                            + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Previous'><span aria-hidden='true' class='text-muted'>«</span></a></li>"
-                            + "<li class='page-item disabled active'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true'>"+data.halamanAktif+" of about "+data.jumlahHalaman+" page</span></a></li>"
-                            + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Next'><span aria-hidden='true' class='text-muted'>»</span></a></li>"
-                            + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Last'><span aria-hidden='true' class='text-muted'>Last</span></a></li>"
-                        + "</ul>"
-                        + "</nav>"
-                    + "</div>");
-                }
-                else
-                {
-                    $("#navigation").remove();
-                    $("#writepagination").append(""
-                    + "<div id='navigation'>"
-                        + "<nav class='pagination-outer' aria-label='Page navigation'>"
-                        + "<ul class='pagination pagination-sm'>"
-                            + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true' class='text-muted'>First</span></a></li>"
-                            + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Previous'><span aria-hidden='true' class='text-muted'>«</span></a></li>"
-                            + "<li class='page-item disabled active'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true'>"+data.halamanAktif+" of about "+data.jumlahHalaman+" page</span></a></li>"
-                            + "<li class='page-item '><a href='#' class='page-link' aria-label='Next' onclick=\'raquo("+(valraquo)+")\'><span aria-hidden='true'>»</span></a></li>"
-                            + "<li class='page-item '><a href='#' class='page-link' aria-label='Last' onclick=\'last("+data.jumlahHalaman+")\'><span aria-hidden='true'>Last</span></a></li>"
-                        + "</ul>"
-                        + "</nav>"
-                    + "</div>");
-                }
-            }
-        }
+        success : function(data) { applyInputResult(data); },
+        error   : function() { showInputLoadError(); }
     });
 }
 
 //  ***
 //  function pagination
-var urlpaging = "{{ route('input.pagination') }}";
-function first(jumlahHalaman)
+var urlpaging = urlPagination;
+function loadInputPage(jumlahHalaman)
 {
-    //  variable
     var stdate      = $("#stdate").val().replace(/-/g, "");
     var endate      = $("#endate").val().replace(/-/g, "");
     var jnsdokbc    = $("#jnsdokbc").val();
@@ -342,234 +249,14 @@ function first(jumlahHalaman)
         method  : 'GET',
         data    : { stdate:stdate, endate:endate, jnsdokbc:jnsdokbc, nodokbc:nodokbc, partno:partno, jumlahHalaman: jumlahHalaman },
         dataType: 'json',
-        success : function(data)
-        {
-            var valraquo = data.halamanAktif + 1;
-            $("#loadingdata").remove();
-            $('tbody').html(data.table_data);
-            //  total count
-            if(data.totalcount == 1)
-            {
-                $("#spn_totalcount").text("Total data "+data.totalcount+" record");
-            }
-            else if(data.totalcount > 1)
-            {
-                $("#spn_totalcount").text("Total data "+data.totalcount+" records");
-            }
-            else
-            {
-                $("#spn_totalcount").text("Data nothing");
-            }
-            //  pagination
-            $("#navigation").remove();
-            $("#writepagination").append(""
-            + "<div id='navigation'>"
-                + "<nav class='pagination-outer' aria-label='Page navigation'>"
-                + "<ul class='pagination pagination-sm'>"
-                    + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true' class='text-muted'>First</span></a></li>"
-                    + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Previous'><span aria-hidden='true' class='text-muted'>«</span></a></li>"
-                    + "<li class='page-item disabled active'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true'>"+data.halamanAktif+" of about "+data.jumlahHalaman+" page</span></a></li>"
-                    + "<li class='page-item '><a href='#' class='page-link' aria-label='Next' onclick=\'raquo("+(valraquo)+")\'><span aria-hidden='true'>»</span></a></li>"
-                    + "<li class='page-item '><a href='#' class='page-link' aria-label='Last' onclick=\'last("+data.jumlahHalaman+")\'><span aria-hidden='true'>Last</span></a></li>"
-                + "</ul>"
-                + "</nav>"
-            + "</div>");
-        }
+        success : function(data) { applyInputResult(data); },
+        error   : function() { showInputLoadError(); }
     });
 }
-
-function laquo(jumlahHalaman)
-{
-    //  variable
-    var stdate      = $("#stdate").val().replace(/-/g, "");
-    var endate      = $("#endate").val().replace(/-/g, "");
-    var jnsdokbc    = $("#jnsdokbc").val();
-    var nodokbc     = $("#nodokbc").val();
-    var partno      = $("#partno").val();
-    $("#loadingdata").remove();
-    $("#writeloading").append("<div id='loadingdata' class='text-muted font-italic'> <img src='./zlayouts/images/loadingdata.gif' height='20'><small>&nbsp;Loading data...</small> </div>");
-    $.ajax({
-        url     : urlpaging,
-        method  : 'GET',
-        data    : { stdate:stdate, endate:endate, jnsdokbc:jnsdokbc, nodokbc:nodokbc, partno:partno, jumlahHalaman: jumlahHalaman },
-        dataType: 'json',
-        success : function(data)
-        {
-            var vallaquo = data.halamanAktif - 1;
-            var valraquo = data.halamanAktif + 1;
-            $("#loadingdata").remove();
-            $('tbody').html(data.table_data);
-            //  total count
-            if(data.totalcount == 1)
-            {
-                $("#spn_totalcount").text("Total data "+data.totalcount+" record");
-            }
-            else if(data.totalcount > 1)
-            {
-                $("#spn_totalcount").text("Total data "+data.totalcount+" records");
-            }
-            else
-            {
-                $("#spn_totalcount").text("Data nothing");
-            }
-            //  pagination
-            if(data.halamanAktif > 1)
-            {
-                $("#navigation").remove();
-                $("#writepagination").append(""
-                + "<div id='navigation'>"
-                    + "<nav class='pagination-outer' aria-label='Page navigation'>"
-                    + "<ul class='pagination pagination-sm'>"
-                        + "<li class='page-item '><a href='#' class='page-link' aria-label='First' onclick=\'first(1)\'><span aria-hidden='true'>First</span></a></li>"
-                        + "<li class='page-item '><a href='#' class='page-link' aria-label='Previous' onclick=\'laquo("+(vallaquo)+")\'><span aria-hidden='true'>«</span></a></li>"
-                        + "<li class='page-item disabled active'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true'>"+data.halamanAktif+" of about "+data.jumlahHalaman+" page</span></a></li>"
-                        + "<li class='page-item '><a href='#' class='page-link' aria-label='Next' onclick=\'raquo("+(valraquo)+")\'><span aria-hidden='true'>»</span></a></li>"
-                        + "<li class='page-item '><a href='#' class='page-link' aria-label='Last' onclick=\'last("+data.jumlahHalaman+")\'><span aria-hidden='true'>Last</span></a></li>"
-                    + "</ul>"
-                    + "</nav>"
-                + "</div>");
-            }
-            else
-            {
-                $("#navigation").remove();
-                $("#writepagination").append(""
-                + "<div id='navigation'>"
-                    + "<nav class='pagination-outer' aria-label='Page navigation'>"
-                    + "<ul class='pagination pagination-sm'>"
-                        + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true' class='text-muted'>First</span></a></li>"
-                        + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Previous'><span aria-hidden='true' class='text-muted'>«</span></a></li>"
-                        + "<li class='page-item disabled active'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true'>"+data.halamanAktif+" of about "+data.jumlahHalaman+" page</span></a></li>"
-                        + "<li class='page-item '><a href='#' class='page-link' aria-label='Next' onclick=\'raquo("+(valraquo)+")\'><span aria-hidden='true'>»</span></a></li>"
-                        + "<li class='page-item '><a href='#' class='page-link' aria-label='Last' onclick=\'last("+data.jumlahHalaman+")\'><span aria-hidden='true'>Last</span></a></li>"
-                    + "</ul>"
-                    + "</nav>"
-                + "</div>");
-            }
-        }
-    });
-}
-
-function raquo(jumlahHalaman)
-{
-    //  variable
-    var stdate      = $("#stdate").val().replace(/-/g, "");
-    var endate      = $("#endate").val().replace(/-/g, "");
-    var jnsdokbc    = $("#jnsdokbc").val();
-    var nodokbc     = $("#nodokbc").val();
-    var partno      = $("#partno").val();
-    $("#loadingdata").remove();
-    $("#writeloading").append("<div id='loadingdata' class='text-muted font-italic'> <img src='./zlayouts/images/loadingdata.gif' height='20'><small>&nbsp;Loading data...</small> </div>");
-    $.ajax({
-        url     : urlpaging,
-        method  : 'GET',
-        data    : { stdate:stdate, endate:endate, jnsdokbc:jnsdokbc, nodokbc:nodokbc, partno:partno, jumlahHalaman: jumlahHalaman },
-        dataType: 'json',
-        success : function(data)
-        {
-            var vallaquo = data.halamanAktif - 1;
-            var valraquo = data.halamanAktif + 1;
-            $("#loadingdata").remove();
-            $('tbody').html(data.table_data);
-            //  total count
-            if(data.totalcount == 1)
-            {
-                $("#spn_totalcount").text("Total data "+data.totalcount+" record");
-            }
-            else if(data.totalcount > 1)
-            {
-                $("#spn_totalcount").text("Total data "+data.totalcount+" records");
-            }
-            else
-            {
-                $("#spn_totalcount").text("Data nothing");
-            }
-            //  pagination
-            if(data.halamanAktif < data.jumlahHalaman)
-            {
-                $("#navigation").remove();
-                $("#writepagination").append(""
-                + "<div id='navigation'>"
-                    + "<nav class='pagination-outer' aria-label='Page navigation'>"
-                    + "<ul class='pagination pagination-sm'>"
-                        + "<li class='page-item '><a href='#' class='page-link' aria-label='First' onclick=\'first(1)\'><span aria-hidden='true'>First</span></a></li>"
-                        + "<li class='page-item '><a href='#' class='page-link' aria-label='Previous' onclick=\'laquo("+(vallaquo)+")\'><span aria-hidden='true'>«</span></a></li>"
-                        + "<li class='page-item disabled active'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true'>"+data.halamanAktif+" of about "+data.jumlahHalaman+" page</span></a></li>"
-                        + "<li class='page-item '><a href='#' class='page-link' aria-label='Next' onclick=\'raquo("+(valraquo)+")\'><span aria-hidden='true'>»</span></a></li>"
-                        + "<li class='page-item '><a href='#' class='page-link' aria-label='Last' onclick=\'last("+data.jumlahHalaman+")\'><span aria-hidden='true'>Last</span></a></li>"
-                    + "</ul>"
-                    + "</nav>"
-                + "</div>");
-            }
-            else
-            {
-                $("#navigation").remove();
-                $("#writepagination").append(""
-                + "<div id='navigation'>"
-                    + "<nav class='pagination-outer' aria-label='Page navigation'>"
-                    + "<ul class='pagination pagination-sm'>"
-                        + "<li class='page-item '><a href='#' class='page-link' aria-label='First' onclick=\'first(1)\'><span aria-hidden='true'>First</span></a></li>"
-                        + "<li class='page-item '><a href='#' class='page-link' aria-label='Previous' onclick=\'laquo("+(vallaquo)+")\'><span aria-hidden='true'>«</span></a></li>"
-                        + "<li class='page-item disabled active'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true'>"+data.halamanAktif+" of about "+data.jumlahHalaman+" page</span></a></li>"
-                        + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Next'><span aria-hidden='true' class='text-muted'>»</span></a></li>"
-                        + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Last'><span aria-hidden='true' class='text-muted'>Last</span></a></li>"
-                    + "</ul>"
-                    + "</nav>"
-                + "</div>");
-            }
-        }
-    });
-}
-
-function last(jumlahHalaman)
-{
-    //  variable
-    var stdate      = $("#stdate").val().replace(/-/g, "");
-    var endate      = $("#endate").val().replace(/-/g, "");
-    var jnsdokbc    = $("#jnsdokbc").val();
-    var nodokbc     = $("#nodokbc").val();
-    var partno      = $("#partno").val();
-    $("#loadingdata").remove();
-    $("#writeloading").append("<div id='loadingdata' class='text-muted font-italic'> <img src='./zlayouts/images/loadingdata.gif' height='20'><small>&nbsp;Loading data...</small> </div>");
-    $.ajax({
-        url     : urlpaging,
-        method  : 'GET',
-        data    : { stdate:stdate, endate:endate, jnsdokbc:jnsdokbc, nodokbc:nodokbc, partno:partno, jumlahHalaman: jumlahHalaman },
-        dataType: 'json',
-        success : function(data)
-        {
-            var vallaquo = data.halamanAktif - 1;
-            $("#loadingdata").remove();
-            $('tbody').html(data.table_data);
-            //  total count
-            if(data.totalcount == 1)
-            {
-                $("#spn_totalcount").text("Total data "+data.totalcount+" record");
-            }
-            else if(data.totalcount > 1)
-            {
-                $("#spn_totalcount").text("Total data "+data.totalcount+" records");
-            }
-            else
-            {
-                $("#spn_totalcount").text("Data nothing");
-            }
-            //  pagination
-            $("#navigation").remove();
-            $("#writepagination").append(""
-            + "<div id='navigation'>"
-                + "<nav class='pagination-outer' aria-label='Page navigation'>"
-                + "<ul class='pagination pagination-sm'>"
-                    + "<li class='page-item '><a href='#' class='page-link' aria-label='First' onclick=\'first(1)\'><span aria-hidden='true'>First</span></a></li>"
-                    + "<li class='page-item '><a href='#' class='page-link' aria-label='Previous' onclick=\'laquo("+(vallaquo)+")\'><span aria-hidden='true'>«</span></a></li>"
-                    + "<li class='page-item disabled active'><a href='#' class='page-link' aria-label='First'><span aria-hidden='true'>"+data.halamanAktif+" of about "+data.jumlahHalaman+" page</span></a></li>"
-                    + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Next'><span aria-hidden='true' class='text-muted'>»</span></a></li>"
-                    + "<li class='page-item disabled'><a href='#' class='page-link' aria-label='Last'><span aria-hidden='true' class='text-muted'>Last</span></a></li>"
-                + "</ul>"
-                + "</nav>"
-            + "</div>");
-        }
-    });
-}
+function first(jumlahHalaman) { loadInputPage(jumlahHalaman || 1); }
+function laquo(jumlahHalaman) { loadInputPage(jumlahHalaman); }
+function raquo(jumlahHalaman) { loadInputPage(jumlahHalaman); }
+function last(jumlahHalaman) { loadInputPage(jumlahHalaman); }
 
 //  download data
 function download(){

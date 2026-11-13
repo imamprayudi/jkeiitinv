@@ -45,17 +45,16 @@ class WipController extends Controller
         $parameter['page'] = 0;
         $parameter['limit'] = 1;
         
-        $counts = $this->makeApiRequest('json_wip.php', $parameter->toArray());
+        $counts = $this->makeApiRequest('json_wip.php', $parameter->toArray()) ?? [];
         
-        $totalcount = $counts['totalCount'] ?? 0;
+        $totalcount = (int) ($counts['totalCount'] ?? 0);
 
         if($totalcount == 0){
-            $jumlahHalaman = ceil($totalcount / $jumlahDataPerHalaman);
+            $jumlahHalaman = 0;
             $halamanAktif = 0;
-            $awalData = (($jumlahDataPerHalaman * $halamanAktif) - $jumlahDataPerHalaman) + 1;
             $output = '
             <tr>
-            <td class="text-center" colspan="16">No Data Found</td>
+            <td class="text-center" colspan="7">No Data Found</td>
             </tr>
             ';
 
@@ -76,14 +75,11 @@ class WipController extends Controller
         $params['page'] = $awalData;
         $params['limit'] = $jumlahDataPerHalaman;
         
-        $sql = $this->makeApiRequest('json_wip.php', $params->toArray());
+        $sql = $this->makeApiRequest('json_wip.php', $params->toArray()) ?? [];
         
-        if ($sql && isset($sql['rows'])) {
-            $nomor = $awalData;
-            foreach ($sql['rows'] as $rowdata) {
-                $no = ++$nomor;
-                $output .= Helper::return_data_wip($no, $rowdata);
-            }
+        foreach (($sql['rows'] ?? []) as $rowdata) {
+            $no = ++$awalData;
+            $output .= Helper::return_data_wip($no, $rowdata);
         }
 
         $data = [
