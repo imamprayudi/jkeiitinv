@@ -8,18 +8,10 @@ use App\Helper;
 
 class ScrapController extends Controller
 {
-    protected $domain = "https://svr1.jkei.jvckenwood.com/";
-    protected $url = "api_invesa_test/";
+    protected $domain = "https://jkei.jvckenwood.com/";
+    protected $url = "api/invesa/";
     protected $tempat = 'Gudang Scrap';
     protected $kategori = 8;
-
-    public function __construct(){
-        $serverName = $_SERVER['SERVER_NAME'] ?? null;
-        if (str_contains($serverName, '136.198.117.') || str_contains($serverName, 'localhost'))
-        {
-            $this->domain ="http://136.198.117.118/";
-        }
-    }
     //  **
     //  index
     public function index(Request $request)

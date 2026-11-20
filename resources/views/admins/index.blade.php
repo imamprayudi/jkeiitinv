@@ -100,17 +100,9 @@
     //  ***
     //  load data admins.index
   
-    function forceHttps(url) {
-    if (url.startsWith('http://')) {
-        return 'https://' + url.substring(7); // buang "http://"
-    }
-    return url; // kalau sudah https, tidak diubah
-  }
-
-  var url = forceHttps("{{ route('mutation') }}");
-  // var url = "{{ route('mutation') }}";
-  var urlpaging = forceHttps("{{ route('mutation_page') }}");
-  // var urlpaging = "{{ route('mutation_page') }}";
+    // Keep http on localhost; only production needs https.
+    var url = "{{ route('mutation') }}";
+    var urlpaging = "{{ route('mutation_page') }}";
     var kategori = "{{ $kategori_data['kategori'] }}";
     var gudang   = "{{ $kategori_data['gudang'] }}";
 

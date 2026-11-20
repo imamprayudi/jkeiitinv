@@ -46,10 +46,10 @@
                     <div class="card-body">
                         {{-- <form method="get"> --}}
                             <div class="input-group input-group-md">
-                                <span class="input-group-text bg-warning bg-opacity-50 text-center"><i class="bi bi-calendar3"></i> Periode (mm/yyyy)</span>
+                                <span class="input-group-text bg-warning bg-opacity-50 text-center"><i class="bi bi-calendar3"></i> Periode (dd/mm/yyyy)</span>
                                 
                                 <input type="date" class="form-control" name="periode" id="periode" autocomplete="off">
-                                <button type="submit" class="btn btn-info" id="btn_cari" onclick="search()"><i class="bi bi-search"></i> Search</button>
+                                <button type="button" class="btn btn-info" id="btn_cari" onclick="search()"><i class="bi bi-search"></i> Search</button>
                                 <button type="button" class="btn btn-secondary" id="btn_download" onclick="download()"><i class="bi bi-download"></i> Download</button>
                                 <button type="reset" class="btn btn-warning" id="btn_reset"><i class="bi bi-x-lg"></i> Reset </button>
                             </div>
@@ -130,17 +130,30 @@
     });
 
     
+    function showWipLoadError(message)
+    {
+        $("#loadingdata").remove();
+        $("#navigation").remove();
+        $("#spn_totalcount").text(message || "Failed to load data");
+        $('tbody').html('<tr><td class="text-center" colspan="7">'+(message || "Failed to load data")+'</td></tr>');
+    }
+
     function search()
     {
         console.log("CLICK SEARCH WIP")
         //  variable
-        var periode     = $("#periode").val().replace(/-/g, "");
+        var periode     = ($("#periode").val() || "").replace(/-/g, "");
         var work_center = $('#work_center').val();
         var dic         = $('#dic').val();
         var kode_barang = $('#kode_barang').val();
         var nama_barang = $('#nama_barang').val();
         var satuan      = $('#satuan').val();
         var jumlah      = $('#jumlah').val();
+
+        if (!periode || periode.length !== 8) {
+            showWipLoadError("Please select a valid periode date");
+            return;
+        }
         
         $("#loadingdata").remove();
         $("#writeloading").append("<div id='loadingdata' class='text-muted font-italic'> <img src='./zlayouts/images/loadingdata.gif' height='20'><small>&nbsp;Loading data...</small> </div>");
@@ -168,7 +181,7 @@
 
                 else
                 {
-                    $("#spn_totalcount").text("Data nothing");
+                    $("#spn_totalcount").text("No data found");
                 }
                 //  pagination
                 if(data.halamanAktif > 1)
@@ -241,7 +254,8 @@
                         + "</div>");
                     }
                 }
-            }
+            },
+            error: function() { showWipLoadError("Failed to load data"); }
         });
     }
 
@@ -525,36 +539,32 @@
 
     //  ***
     //  start ajax
+    function todayYmdDash()
+    {
+        var d = new Date();
+        var month = d.getMonth() + 1;
+        var day = d.getDate();
+        return d.getFullYear()
+            + '-' + ((''+month).length<2 ? '0' : '') + month
+            + '-' + ((''+day).length<2 ? '0' : '') + day;
+    }
+
     $(document).ready(function(){
-        //  buat tanggal
-        var d       = new Date();
-        var stmonth   = d.getMonth();
-        var enmonth   = d.getMonth()+1;
-        var day     = d.getDate();
-        var stdate  = d.getFullYear() + '-' +
-                        ((''+enmonth).length<2 ? '0' : '') + enmonth;
-        //  set value
-        $("#periode").val(stdate);
+        // type="date" needs YYYY-MM-DD; WIP periode in DB is daily Ymd
+        $("#periode").val(todayYmdDash());
 
         //  trigger toogle
         $("#menuToggle").trigger('click');
 
         //  search data
-        $('#endate').change(function (){ search(); });
-        $("#partno").keydown(function (e){ if(e.keyCode == 13){ search(); }});
+        $("#periode").change(function (){ search(); });
         $("#btn_download").click(function(){ download(); });
         $("#btn_reset").click(function(){
-            //  buat tanggal
-            var d       = new Date();
-            var stmonth   = d.getMonth();
-            var enmonth   = d.getMonth()+1;
-            var day     = d.getDate();
-            var stdate  = d.getFullYear() + '-' +
-                            ((''+enmonth).length<2 ? '0' : '') + enmonth;
-            //  set value
-            $("#periode").val(stdate);
+            $("#periode").val(todayYmdDash());
             window.location.href =  window.location.href.split("#")[0];
         });
+
+        search();
     });
 </script>
 @endsection
