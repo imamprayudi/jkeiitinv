@@ -2,6 +2,7 @@
 
 namespace App\Http\Traits;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -21,13 +22,11 @@ trait ApiConfigurationTrait
     {
         try {
             $this->setDomainBasedOnServer();
-            // ✅ PERBAIKAN: Ganti setVersionFromApi() dengan getVersionSafely()
-            $this->apiVersion = $this->getVersionSafely();
             Log::info('ApiConfigurationTrait: Konfigurasi berhasil diinisialisasi', [
                 'domain' => $this->apiDomain,
                 'version' => $this->apiVersion
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error('ApiConfigurationTrait: Error saat inisialisasi', [
                 'error' => $e->getMessage()
             ]);
@@ -61,27 +60,25 @@ trait ApiConfigurationTrait
     public function getVersionSafely()
     {
         try {
-            $url = $this->apiDomain . $this->apiUrl . "json_version_sync.php";
-            
-            // ✅ Timeout 30 detik dengan retry logic
-            $response = Http::timeout(30)->get($url);
-            
-            if ($response->successful()) {
-                $data = $response->json();
-                $version = $data['version'] ?? '3.0.0';
-                $this->apiVersion = $version; // ✅ Update internal version
-                Log::info('Version fetched successfully', ['version' => $version]);
-                return $version;
-            } else {
+            $version = Cache::store('file')->remember('gitinventory.api_version', 600, function () {
+                $url = $this->apiDomain . $this->apiUrl . "json_version_sync.php";
+                $response = Http::connectTimeout(3)->timeout(8)->get($url);
+
+                if ($response->successful()) {
+                    return $response->json('version') ?? '3.0.0';
+                }
+
                 Log::warning('Version fetch failed', ['status' => $response->status()]);
-                return $this->apiVersion; // Return current version as fallback
-            }
-            
-        } catch (Exception $e) {
+                return $this->apiVersion;
+            });
+
+            $this->apiVersion = $version;
+            return $version;
+        } catch (\Exception $e) {
             Log::error('Exception occurred while fetching version', [
                 'message' => $e->getMessage()
             ]);
-            return $this->apiVersion; // Return current version as fallback
+            return $this->apiVersion;
         }
     }
 

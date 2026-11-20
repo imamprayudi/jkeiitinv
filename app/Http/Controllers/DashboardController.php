@@ -77,7 +77,7 @@ class DashboardController extends Controller
             
             // ✅ Gunakan timeout yang lebih reasonable
             $startTime = microtime(true);
-            $response = Http::get($url); // Ubah dari 500 ke 10 detik
+            $response = Http::connectTimeout(3)->timeout(8)->get($url);
             $endTime = microtime(true);
             $duration = ($endTime - $startTime) * 1000;
             
@@ -114,7 +114,7 @@ class DashboardController extends Controller
             Log::info('DashboardController: URL information', ['url' => $url]);
             
             $startTime = microtime(true);
-            $response = Http::get($url);
+            $response = Http::connectTimeout(5)->timeout(20)->get($url);
             $endTime = microtime(true);
             $duration = ($endTime - $startTime) * 1000;
             
@@ -286,21 +286,13 @@ class DashboardController extends Controller
     {
         try {
             Log::info('DashboardController: Index method dimulai');
-            
-            // Get version dan information
+
             $gitversions = $this->getVersionSafely();
             $get_info = $this->getInformationSafely();
-            
-            // Prepare safe data
             $safeData = $this->prepareSafeViewData($get_info);
-            
-            // Prepare view data
             $viewData = array_merge(['gitversions' => $gitversions], $safeData);
-            
-            Log::info('DashboardController: Siap render view dengan data aman');
-            
+
             return view('dashboard', $viewData);
-            
         } catch (Exception $e) {
             Log::error('DashboardController: Fatal error di index method', [
                 'error' => $e->getMessage(),
