@@ -10,7 +10,7 @@ trait ApiConfigurationTrait
 {
     // ✅ Gunakan private untuk menghindari konflik
     private $apiDomain = "https://jkei.jvckenwood.com/";
-    private $apiUrl = "api/invesa/";
+    private $apiUrl = "api/custom/";
     private $apiVersion = "versioning..";
 
     /**
@@ -41,14 +41,31 @@ trait ApiConfigurationTrait
     private function setDomainBasedOnServer()
     {
         $serverName = $_SERVER['SERVER_NAME'] ?? 'localhost';
+        $base = rtrim((string) config('services.inventory.url', 'https://jkei.jvckenwood.com/api/custom'), '/');
+        $slash = strpos($base, '/', 8);
 
-        // ✅ Expose domain melalui getter untuk backward compatibility
+        if ($slash === false) {
+            $this->apiDomain = $base . '/';
+            $this->apiUrl = '';
+        } else {
+            $this->apiDomain = substr($base, 0, $slash + 1);
+            $this->apiUrl = substr($base, $slash + 1) . '/';
+        }
+
         $this->domain = $this->apiDomain;
         $this->url = $this->apiUrl;
-        
+
         Log::info('API Domain initialized', [
             'server_name' => $serverName,
-            'domain' => $this->apiDomain
+            'domain' => $this->apiDomain,
+            'url' => $this->apiUrl,
+        ]);
+    }
+
+    protected function apiHttp()
+    {
+        return Http::withHeaders([
+            'X-Api-Key' => (string) config('services.inventory.key'),
         ]);
     }
 
@@ -62,7 +79,7 @@ trait ApiConfigurationTrait
         try {
             $version = Cache::store('file')->remember('gitinventory.api_version', 600, function () {
                 $url = $this->apiDomain . $this->apiUrl . "json_version_sync.php";
-                $response = Http::connectTimeout(3)->timeout(8)->get($url);
+                $response = $this->apiHttp()->connectTimeout(3)->timeout(8)->get($url);
 
                 if ($response->successful()) {
                     return $response->json('version') ?? '3.0.0';
@@ -111,7 +128,7 @@ trait ApiConfigurationTrait
             ]);
             
             // ✅ Timeout 30 detik untuk semua request
-            $response = Http::timeout(30)->get($url, $params);
+            $response = $this->apiHttp()->timeout(30)->get($url, $params);
             
             if ($response->successful()) {
                 Log::info('API request successful', [
@@ -157,7 +174,6 @@ trait ApiConfigurationTrait
                 'valuserid' => $userid,
                 'valuserpass' => $userpass,
                 'valipaddress' => $ipaddress,
-                'sql' => "call sync_check_login {$userid}, {$userpass}, {$ipaddress}"
             ];
             
             Log::info('Making login API request', [
@@ -166,7 +182,7 @@ trait ApiConfigurationTrait
                 'ip' => $ipaddress
             ]);
             
-            $response = Http::get($url, $params);
+            $response = $this->apiHttp()->asForm()->timeout(30)->post($url, $params);
             
             Log::info('Login API response received', [
                 'status' => $response->status(),
@@ -192,7 +208,7 @@ trait ApiConfigurationTrait
     public function isApiHealthy(): bool
     {
         try {
-            $response = Http::get($this->domain . $this->url . 'health-check.php');
+            $response = $this->apiHttp()->get($this->domain . $this->url . 'health-check.php');
             return $response->successful();
         } catch (Exception $e) {
             return false;

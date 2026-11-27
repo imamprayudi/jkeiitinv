@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'inventory' => [
+        'url' => env('INVENTORY_API_URL', 'https://jkei.jvckenwood.com/api/custom/'),
+        'key' => env('INVENTORY_API_KEY'),
+    ],
+
 ];

@@ -243,8 +243,8 @@ class IncomingController extends Controller
         ];
         // return $this->domain . $this->url . "json_download_incoming.php?valstdate={$stdate}&valendate={$endate}&valjnsdok={$jnsdokbc}&valnodok={$nodokbc}&valpartno={$partno}";
         //  mengambil data table
-        $sql    = Http::get($this->domain . $this->url . "json_download_incoming.php?valstdate={$stdate}&valendate={$endate}&valjnsdok={$jnsdokbc}&valnodok={$nodokbc}&valpartno={$partno}");
-        // $sql    = Http::get($this->domain . $this->url . "json_download_incoming.php", $params);
+        $sql    = $this->apiHttp()->get($this->domain . $this->url . "json_download_incoming.php?valstdate={$stdate}&valendate={$endate}&valjnsdok={$jnsdokbc}&valnodok={$nodokbc}&valpartno={$partno}");
+        // $sql    = $this->apiHttp()->get($this->domain . $this->url . "json_download_incoming.php", $params);
         // return $this->domain . $this->url . "json_download_incoming.php";
         $data = $sql['rows'];
         // return $data;

@@ -3,20 +3,26 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use App\Helper;
+use App\Http\Traits\ApiConfigurationTrait;
 
 class ScrapController extends Controller
 {
-    protected $domain = "https://jkei.jvckenwood.com/";
-    protected $url = "api/invesa/";
+    use ApiConfigurationTrait;
+
     protected $tempat = 'Gudang Scrap';
     protected $kategori = 8;
+
+    public function __construct()
+    {
+        $this->initializeApiConfiguration();
+    }
+
     //  **
     //  index
     public function index(Request $request)
     {
-        $gitversions = Http::get($this->domain.$this->url."json_version_sync.php");
+        $gitversions = $this->apiHttp()->get($this->domain.$this->url."json_version_sync.php");
         $gitversions = $gitversions['version'];
         $categories = [
             "Bahan baku",
@@ -34,7 +40,7 @@ class ScrapController extends Controller
             "Hasil produksi - Contoh"
         ];
         return view('admins.scrap',compact('gitversions','categories'));
-        // $categories  = Http::get($this->domain.$this->url."json_category.php");
+        // $categories  = $this->apiHttp()->get($this->domain.$this->url."json_category.php");
         // return view('admins.scrap')
         //         ->with('gitversion',$gitversions)
         //         ->with('categories',$categories);
@@ -55,7 +61,7 @@ class ScrapController extends Controller
             $periode     = $request->get('periode');
             $partno     = $request->get('partno');
 
-            $counts = Http::get($this->domain . $this->url . "json_gudang_scrap.php", [
+            $counts = $this->apiHttp()->get($this->domain . $this->url . "json_gudang_scrap.php", [
                 'periode' => $periode,
                 'partno' => $partno,
                 'tempat' => $this->tempat,
@@ -82,7 +88,7 @@ class ScrapController extends Controller
                 $awalData               = (($jumlahDataPerHalaman * $halamanAktif) - $jumlahDataPerHalaman);
 
                 //  mengambil data table
-                $sql    = Http::get($this->domain . $this->url . "json_gudang_scrap.php", [
+                $sql    = $this->apiHttp()->get($this->domain . $this->url . "json_gudang_scrap.php", [
                     'periode' => $periode,
                     'partno' => $partno,
                     'tempat' => $this->tempat,
@@ -178,7 +184,7 @@ class ScrapController extends Controller
 
         //  execute database
         // $datas  = DB::select("call sync_down_input('{$stdate}', '{$endate}', '{$jnsdokbc}', '{$nodokbc}', '{$partno}');");
-        $datas = Http::get($this->domain.$this->url.'json_gudang_scrap.php',[
+        $datas = $this->apiHttp()->get($this->domain.$this->url.'json_gudang_scrap.php',[
                     'periode' => $periode,
                     'partno' => $partno,
                     'tempat' => $tempat

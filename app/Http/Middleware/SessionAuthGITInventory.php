@@ -15,6 +15,10 @@ class SessionAuthGITInventory
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (!$request->session()->has('session_gitinventory_id')) {
+            return redirect('/login');
+        }
+
         return $next($request);
     }
 }
